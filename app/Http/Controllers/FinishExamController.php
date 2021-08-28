@@ -43,7 +43,6 @@ class FinishExamController extends Controller
             ->whereDate("history_questions.created_at", Carbon::now()->format('Y-m-d'))
             ->get();
         foreach($data as $row){
-            $score = $score + $row->skor;
             FinishExam::create([
                 "question" => $row->question_name,
                 "option_1" => $row->option_1,
@@ -56,6 +55,14 @@ class FinishExamController extends Controller
                 "key" => $row->answer_key,
                 "skor" => $row->skor
             ]);
+        }
+        $hasil = FinishExam::where("user_id", $request->user_id)
+            ->whereDate("created_at", Carbon::now()->format('Y-m-d'))
+            ->get();
+        foreach($hasil as $row){
+            if($row->key == $row->answer){
+                $score = $score + $row->skor;
+            }
         }
         Score::create([
             "exam_date" => Carbon::now()->format('Y-m-d'),
